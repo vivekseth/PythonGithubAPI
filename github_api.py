@@ -173,18 +173,21 @@ class GithubAPI(object):
 def main():
 	if (len(sys.argv) >= 2):
 		command = sys.argv[1]
-		g = GithubAPI("vivekseth", ACCESS_TOKEN_2)
-		if command == "ls":
+		if command == "new_auth":
+			g = GithubAPI(new_auth=True)
+			return
+		g = GithubAPI(new_auth=False)
+		if command == "list":
 			if (len(sys.argv) >= 3):
 				g.list_repos(sys.argv[2])
 			else:
 				g.list_repos()
-		elif command == "in":
+		elif command == "info":
 			if (len(sys.argv) >= 3):
 				g.info_repo(sys.argv[2])
 			else:
 				RuntimeError("USAGE: `python github_api.py in <name>`")
-		elif command == "cr":
+		elif command == "create":
 			if (len(sys.argv) >= 3):
 				name = sys.argv[2]
 				description = ""
@@ -194,7 +197,7 @@ def main():
 				g.create_repo(name, description, homepage)				
 			else:
 				RuntimeError("USAGE: `python github_api.py cr <name> [<description> [<homepage>]]`")
-		elif command == "ed":
+		elif command == "edit":
 			if (len(sys.argv) >= 3):
 				name = sys.argv[2]
 				new_name = ""
@@ -206,7 +209,7 @@ def main():
 				g.edit_repo(name, new_name, description, homepage)				
 			else:
 				RuntimeError("USAGE: `python github_api.py ed <name> [<new_name> [<description> [<homepage>]]]`")
-		elif command == "de":
+		elif command == "delete":
 			if (len(sys.argv) >= 3): 
 				g.delete_repo(sys.argv[2])
 			else: 
