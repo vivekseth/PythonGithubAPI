@@ -191,24 +191,4 @@ def main():
 		else:
 			raise RuntimeError("invalid command")
 
-	# g = GithubAPI("vivekseth", ACCESS_TOKEN_2)
-	# g.create_repo("create_repo")
-
-
 if __name__ == '__main__': main()
-
-
-"""
-#!/bin/bash
-access_token=80a9d9dfa3155f294c78959f07cd439f6c4ae9f4
-
-echo "Create Github Repository"
-echo -n "Enter new repo name [ENTER]: "
-read repo_name
-echo -n "Clone URL: "
-curl -s -X POST \
--u "$access_token:v" \
---data "{\"name\":\"$repo_name\"}" \
-https://api.github.com/user/repos \
-| grep git_url | grep -o git://.*git
-"""
