@@ -23,14 +23,10 @@ class GithubAPI(object):
 		return (self.access_token, 'x-oauth-basic')
 	
 	def print_major_repo_info(self, repo_info):
-		if repo_info['name']: 
-			print "* name: "+ repo_info['name']
-		if repo_info['description']: 
-			print "* description: "+ repo_info['description']
-		if repo_info['homepage']: 
-			print "* homepage: "+ repo_info['homepage']
-		if repo_info['clone_url']: 
-			print "* clone_url: "+ repo_info['clone_url']
+		if repo_info['name']: print "* name: "+ repo_info['name']
+		if repo_info['description']: print "* description: "+ repo_info['description']
+		if repo_info['homepage']: print "* homepage: "+ repo_info['homepage']
+		if repo_info['clone_url']: print "* clone_url: "+ repo_info['clone_url']
 
 	## Major Repo Methods ##
 
