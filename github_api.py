@@ -1,6 +1,9 @@
 import requests
 import json
 import sys
+import os.path
+
+AUTH_INFO_FILEPATH = '/Users/vivekseth/.github_api_auth_info'
 
 def request_description(r):
 	print "STATUS: " + str(r.status_code)
@@ -13,12 +16,36 @@ def request_description(r):
 class GithubAPI(object):
 	"""docstring for GithubAPI"""
 	
-	def __init__(self, username, access_token):
+	def __init__(self, filepath=AUTH_INFO_FILEPATH, new_auth=False):
 		super(GithubAPI, self).__init__()
+		self.base_url = 'https://api.github.com'
+		username = ""
+		access_token = ""
+		if os.path.isfile(filepath) and new_auth == False:
+			f = open(filepath)
+			d = self.parse_auth_info(f)
+			f.close()
+			username = d['username']
+			access_token = d['access_token']
+		else:
+			username = raw_input("username: ")
+			access_token = raw_input("access_token: ")
+			self.write_auth_info(filepath, username, access_token)
 		self.username = username
 		self.access_token = access_token
-		self.base_url = 'https://api.github.com'
-	
+
+	def parse_auth_info(self, f):
+		return json.loads(f.read())
+
+	def write_auth_info(self, filepath, username, access_token):
+		auth_info_dict = {}
+		auth_info_dict['username'] = username
+		auth_info_dict['access_token'] = access_token
+		auth_info_json_string = json.dumps(auth_info_dict)
+		f = open(filepath, 'w')
+		f.write(auth_info_json_string)
+		f.close()
+
 	def auth_tuple(self):
 		return (self.access_token, 'x-oauth-basic')
 	
