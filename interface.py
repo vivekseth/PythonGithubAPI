@@ -6,52 +6,7 @@ from github_api import GithubAPI
 
 AUTH_INFO_FILEPATH = expanduser("~/.github_api_auth_info")
 
-def __init__(self, filepath=AUTH_INFO_FILEPATH, new_auth=False):
-	super(GithubAPI, self).__init__()
-	self.base_url = 'https://api.github.com'
-	username = ""
-	access_token = ""
-	if os.path.isfile(filepath) and new_auth == False:
-		f = open(filepath)
-		d = self.parse_auth_info(f)
-		f.close()
-		username = d['username']
-		access_token = d['access_token']
-	else:
-		username = raw_input("username: ")
-		access_token = raw_input("access_token: ")
-		self.write_auth_info(filepath, username, access_token)
-	self.username = username
-	self.access_token = access_token
-
-def parse_auth_info(self, f):
-	return json.loads(f.read())
-
-def write_auth_info(self, filepath, username, access_token):
-	auth_info_dict = {}
-	auth_info_dict['username'] = username
-	auth_info_dict['access_token'] = access_token
-	auth_info_json_string = json.dumps(auth_info_dict)
-	f = open(filepath, 'w')
-	f.write(auth_info_json_string)
-	f.close()
-
-
-def get_arg(index):
-	if len(sys.argv) >= (index+1): 
-		return sys.argv[index]
-	else:
-		return ""
-
-def print_help():
-	print "commands: [ new_auth, list, info, create, edit, delete ]" 
-
-def create_api_obj():
-	auth_info = read_auth(AUTH_INFO_FILEPATH)
-	assert auth_info['username']
-	assert auth_info['description']
-	g = GithubAPI(auth_info['username'], auth_info['access_token'])
-
+# Authentication Read/Write #
 def read_auth(filepath):
 	if not os.path.isfile(filepath):
 		raise StandardError("could not find auth info, please create using `auth new` command")
@@ -63,6 +18,7 @@ def read_auth(filepath):
 		raise StandardError("could not parse auth info")
 	else:
 		return d
+
 def write_auth(filepath, username, access_token):
 	if not username or not access_token:
 		raise StandardError("need both username and access_token")
@@ -72,6 +28,30 @@ def write_auth(filepath, username, access_token):
 		f = open(filepath, 'w')
 		f.write(json_string)
 		f.close()
+
+# Helper Accessor Methods #
+def get_arg(index):
+	if len(sys.argv) >= (index+1): 
+		return sys.argv[index]
+	else:
+		return ""
+
+def safe_dict_get(dict, key):
+	if key in dict:
+		return dict[key]
+	else:
+		return ""
+
+def create_api_obj():
+	auth_info = read_auth(AUTH_INFO_FILEPATH)
+	assert auth_info['username']
+	assert auth_info['access_token']
+	g = GithubAPI(auth_info['username'], auth_info['access_token'])
+	return g
+
+# Options #
+def print_help():
+	print "commands: [ new_auth, list, info, create, edit, delete ]" 
 
 def _auth():
 	option = get_arg(2)
@@ -99,90 +79,64 @@ def _auth():
 
 def _create():
 	options = {
-		get_arg(2) : get_arg(3)
-		get_arg(4) : get_arg(5)
-		get_arg(6) : get_arg(7)
+		str(get_arg(2)) : get_arg(3),
+		str(get_arg(4)) : get_arg(5),
+		str(get_arg(6)) : get_arg(7),
 	}
-	g = create_api_obj(AUTH_INFO_FILEPATH)
+	g = create_api_obj()
 	g.create_repo(
-		options['--name'] or options['-n']
-		options['--description'] or options['-d']
-		options['--homepage'] or options['-h']
+		safe_dict_get(options, '--name') or safe_dict_get(options, '-n'),
+		safe_dict_get(options, '--description') or safe_dict_get(options, '-d'),
+		safe_dict_get(options, '--homepage') or safe_dict_get(options, '-h'),
 	)
 
+def _read():
+	option = get_arg(2)
+	assert option
+	g = create_api_obj()
+	if option == "all":
+		page = get_arg(3)
+		g.list_repos(page)
+	else:
+		repo_name = option
+		g.info_repo(repo_name)
+
+def _update():
+	repo_name = get_arg(2)
+	assert repo_name
+	options = {
+		str(get_arg(3)) : get_arg(4),
+		str(get_arg(5)) : get_arg(6),
+		str(get_arg(7)) : get_arg(8),
+	}
+	g = create_api_obj()
+	g.edit_repo(
+		repo_name,
+		safe_dict_get(options, '--name') or safe_dict_get(options, '-n'),
+		safe_dict_get(options, '--description') or safe_dict_get(options, '-d'),
+		safe_dict_get(options, '--homepage') or safe_dict_get(options, '-h'),
+	)
+
+def _delete():
+	repo_name = get_arg(2)
+	assert repo_name
+	g = create_api_obj()
+	g.delete_repo(repo_name)
+
+# Main #
 def main():
 	option = get_arg(1)
-	if option == "auth":
+	if option in ["a", "auth"]:
 		_auth()
-	elif option == "create":
+	elif option in ["c", "create"]:
 		_create()
+	elif option in ["r", "read"]:
+		_read()
+	elif option in ["u", "update"]:
+		_update()
+	elif option in ["d", "delete"]:
+		_delete()
 	else:
 		print_help()
 
-
-
-
-# def main():
-# 	if (len(sys.argv) >= 2):
-# 		command = sys.argv[1]
-# 		if command == "help":
-# 			print_help()
-# 			return
-# 		elif command == "new_auth":
-# 			g = GithubAPI(new_auth=True)
-# 			return
-# 		g = GithubAPI(new_auth=False)
-# 		if command == "list":
-# 			if (len(sys.argv) >= 3):
-# 				g.list_repos(sys.argv[2])
-# 			else:
-# 				g.list_repos()
-# 		elif command == "info":
-# 			if (len(sys.argv) >= 3):
-# 				g.info_repo(sys.argv[2])
-# 			else:
-# 				RuntimeError("USAGE: `python github_api.py in <name>`")
-# 		elif command == "create":
-# 			if (len(sys.argv) >= 3):
-# 				name = sys.argv[2]
-# 				description = ""
-# 				homepage = ""
-# 				if len(sys.argv) >= 4: description = sys.argv[3]
-# 				if len(sys.argv) >= 5: homepage = sys.argv[4]
-# 				g.create_repo(name, description, homepage)				
-# 			else:
-# 				RuntimeError("USAGE: `python github_api.py cr <name> [<description> [<homepage>]]`")
-# 		elif command == "edit":
-# 			if (len(sys.argv) >= 3):
-# 				name = sys.argv[2]
-# 				new_name = ""
-# 				description = ""
-# 				homepage = ""
-# 				if len(sys.argv) >= 4: new_name = sys.argv[3]
-# 				if len(sys.argv) >= 5: description = sys.argv[4]
-# 				if len(sys.argv) >= 6: homepage = sys.argv[5]
-# 				g.edit_repo(name, new_name, description, homepage)				
-# 			else:
-# 				RuntimeError("USAGE: `python github_api.py ed <name> [<new_name> [<description> [<homepage>]]]`")
-# 		elif command == "delete":
-# 			if (len(sys.argv) >= 3): 
-# 				g.delete_repo(sys.argv[2])
-# 			else: 
-# 				RuntimeError("USAGE: `python github_api.py de <name>`")
-# 		else:
-# 			raise RuntimeError("invalid command")
-# 	else:
-# 		print_help()
-
 if __name__ == '__main__': main()
-
-
-"""
-
-git hub auth vivek seth
-git hub create new_repo
-git hub read new_repo
-git hub update new_repo --name 
-
-
-"""
