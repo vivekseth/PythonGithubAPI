@@ -148,19 +148,31 @@ class GithubAPI(object):
 			print "deleted `" + name + "` successfully."
 
 def main():
-	# if (len(sys.argv) >= 2):
-	# 	command = sys.argv[1]
-	# 	g = GithubAPI("vivekseth", ACCESS_TOKEN_2)
-	# 	if command == "ls":
-	# 		if (len(sys.argv) >= 3):
-	# 			g.list_repos(sys.argv[2])
-	# 		else:
-	# 			g.list_repos()
-
-	# 	elif command == "in":
-
-	# 	elif command == "cr":
-
+	if (len(sys.argv) >= 2):
+		command = sys.argv[1]
+		g = GithubAPI("vivekseth", ACCESS_TOKEN_2)
+		if command == "ls":
+			if (len(sys.argv) >= 3):
+				g.list_repos(sys.argv[2])
+			else:
+				g.list_repos()
+		elif command == "in":
+			if (len(sys.argv) >= 3):
+				g.info_repo(sys.argv[2])
+			else:
+				RuntimeError("USAGE: `python github_api.py in <name>`")
+		elif command == "cr":
+			if (len(sys.argv) >= 3):
+				name = sys.argv[2]
+				description = ""
+				homepage = ""
+				if 4 in sys.argv:
+					description = sys.argv[3]
+				if 5 in sys.argv:
+					homepage = sys.argv[4]
+				g.create_repo(name, description, homepage)				
+			else:
+				RuntimeError("USAGE: `python github_api.py cr <name> [<description>] [<homepage>]`")
 	# 	elif command == "ed":
 
 	# 	elif command == "de":
@@ -168,8 +180,8 @@ def main():
 	# 	else:
 	# 		raise RuntimeError("invalid command")
 
-	g = GithubAPI("vivekseth", ACCESS_TOKEN_2)
-	g.delete_repo("test_repo")
+	# g = GithubAPI("vivekseth", ACCESS_TOKEN_2)
+	# g.create_repo("create_repo")
 
 
 if __name__ == '__main__': main()
