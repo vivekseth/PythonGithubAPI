@@ -166,19 +166,30 @@ def main():
 				name = sys.argv[2]
 				description = ""
 				homepage = ""
-				if 4 in sys.argv:
-					description = sys.argv[3]
-				if 5 in sys.argv:
-					homepage = sys.argv[4]
+				if len(sys.argv) >= 4: description = sys.argv[3]
+				if len(sys.argv) >= 5: homepage = sys.argv[4]
 				g.create_repo(name, description, homepage)				
 			else:
-				RuntimeError("USAGE: `python github_api.py cr <name> [<description>] [<homepage>]`")
-	# 	elif command == "ed":
-
-	# 	elif command == "de":
-
-	# 	else:
-	# 		raise RuntimeError("invalid command")
+				RuntimeError("USAGE: `python github_api.py cr <name> [<description> [<homepage>]]`")
+		elif command == "ed":
+			if (len(sys.argv) >= 3):
+				name = sys.argv[2]
+				new_name = ""
+				description = ""
+				homepage = ""
+				if len(sys.argv) >= 4: new_name = sys.argv[3]
+				if len(sys.argv) >= 5: description = sys.argv[4]
+				if len(sys.argv) >= 6: homepage = sys.argv[5]
+				g.edit_repo(name, new_name, description, homepage)				
+			else:
+				RuntimeError("USAGE: `python github_api.py ed <name> [<new_name> [<description> [<homepage>]]]`")
+		elif command == "de":
+			if (len(sys.argv) >= 3): 
+				g.delete_repo(sys.argv[2])
+			else: 
+				RuntimeError("USAGE: `python github_api.py de <name>`")
+		else:
+			raise RuntimeError("invalid command")
 
 	# g = GithubAPI("vivekseth", ACCESS_TOKEN_2)
 	# g.create_repo("create_repo")
