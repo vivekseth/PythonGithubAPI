@@ -9,6 +9,7 @@ AUTH_INFO_FILEPATH = expanduser("~/.github_api_auth_info")
 COMMAND_PREFIX = "git hub"
 
 HELP_STRINGS = {
+	"help" : "",
 	"auth" : {
 		"get": "[filepath]",
 		"set": "username access_token [filepath]",
@@ -16,7 +17,7 @@ HELP_STRINGS = {
 	"create": "(--name|-n) <repo_name> [(--description|-d) <description>] [(--homepage|-h) <homepage>]",
 	"read": {
 		"all" : "[page]",
-		"<repo_name>": "<repo_name>"
+		"<repo_name>": ""
 	},
 	"update": "<repo_name> [(--name|-n) <repo_name>] (--description|-d) <description>] [(--homepage|-h) <homepage>]",
 	"delete": "<repo_name>",
@@ -76,7 +77,23 @@ def create_api_obj():
 
 # Options #
 def print_help():
-	print "commands: [ auth, create, read, update, delete ]" 
+	print ""
+	print "commands: [ help, auth, create, read, update, delete ]" 
+	print "--help--"
+	print create_help_string(COMMAND_PREFIX, ["help"])
+	print "--auth--"
+	print create_help_string(COMMAND_PREFIX, ["auth", "get"])
+	print create_help_string(COMMAND_PREFIX, ["auth", "set"])
+	print "--create--"
+	print create_help_string(COMMAND_PREFIX, ["create"])
+	print "--read--"
+	print create_help_string(COMMAND_PREFIX, ["read", "all"])
+	print create_help_string(COMMAND_PREFIX, ["read", "<repo_name>"])
+	print "--update--"
+	print create_help_string(COMMAND_PREFIX, ["update"])
+	print "--delete--"
+	print create_help_string(COMMAND_PREFIX, ["delete"])
+	print ""
 
 def _auth():
 	option = get_arg(2)
@@ -178,7 +195,9 @@ def _delete():
 # Main #
 def main():
 	option = get_arg(1)
-	if option in ["a", "auth"]:
+	if option in ["h", "help", "-h", "--h", "--help"]:
+		print_help()
+	elif option in ["a", "auth"]:
 		_auth()
 	elif option in ["c", "create"]:
 		_create()
@@ -189,6 +208,8 @@ def main():
 	elif option in ["d", "delete"]:
 		_delete()
 	else:
-		print_help()
+		print "ERROR: invalid option"
+		print "To see available commands please use:"
+		print create_help_string(COMMAND_PREFIX, ["help"])
 
 if __name__ == '__main__': main()
