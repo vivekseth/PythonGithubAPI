@@ -2,8 +2,9 @@ import requests
 import json
 import sys
 import os.path
+from os.path import expanduser
 
-AUTH_INFO_FILEPATH = '/Users/vivekseth/.github_api_auth_info'
+AUTH_INFO_FILEPATH = expanduser("~/.github_api_auth_info")
 
 def request_description(r):
 	print "STATUS: " + str(r.status_code)
@@ -170,10 +171,16 @@ class GithubAPI(object):
 		else :
 			print "deleted `" + name + "` successfully."
 
+def print_help():
+	print "commands: [ new_auth, list, info, create, edit, delete ]" 
+
 def main():
 	if (len(sys.argv) >= 2):
 		command = sys.argv[1]
-		if command == "new_auth":
+		if command == "help":
+			print_help()
+			return
+		elif command == "new_auth":
 			g = GithubAPI(new_auth=True)
 			return
 		g = GithubAPI(new_auth=False)
@@ -216,5 +223,7 @@ def main():
 				RuntimeError("USAGE: `python github_api.py de <name>`")
 		else:
 			raise RuntimeError("invalid command")
+	else:
+		print_help()
 
 if __name__ == '__main__': main()
