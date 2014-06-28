@@ -5,9 +5,9 @@ from os.path import expanduser
 from github_api import GithubAPI
 
 AUTH_INFO_FILEPATH = expanduser("~/.github_api_auth_info")
-
 COMMAND_PREFIX = "git hub"
 
+# Help String Creation #
 HELP_STRINGS = {
 	"help" : "",
 	"auth" : {
@@ -32,6 +32,7 @@ def create_help_string(prefix, key_path):
 	help_string += str(curr_dict)
 	return help_string
 
+
 # Authentication Read/Write #
 def read_auth(filepath):
 	if not isfile(filepath):
@@ -55,6 +56,7 @@ def write_auth(filepath, username, access_token):
 		f.write(json_string)
 		f.close()
 
+
 # Helper Accessor Methods #
 def get_arg(index):
 	if len(sys.argv) >= (index+1): 
@@ -74,6 +76,7 @@ def create_api_obj():
 	assert auth_info['access_token']
 	g = GithubAPI(auth_info['username'], auth_info['access_token'])
 	return g
+
 
 # Options #
 def print_help():
@@ -191,6 +194,7 @@ def _delete():
 		print e
 		print "USAGE: "
 		print create_help_string(COMMAND_PREFIX, ["delete"])
+
 
 # Main #
 def main():
